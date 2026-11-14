@@ -10,6 +10,8 @@ from dataclasses import dataclass
 from src.components.data_transformation import DataTransformation
 from src.components.data_transformation import DataTransformationConfig
 
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
 @dataclass
 class DataIngestionConfig:
     train_data_path: str = os.path.join('artifacts', "train.csv")
@@ -45,9 +47,30 @@ class DataIngestion:
         except Exception as e:
             raise CustomException(e, sys)
 
+
 if __name__ == "__main__":
     obj = DataIngestion()
+
+    logging.info("STEP 1: Starting data ingestion")
     train_data, test_data = obj.initiate_data_ingestion()
+    logging.info("STEP 2: Data ingestion returned successfully")
+    print("Data Ingestion Completed Successfully", flush=True)
 
     data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_data, test_data)
+
+    logging.info("STEP 3: Starting data transformation")
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(
+        train_data, test_data
+    )
+    logging.info("STEP 4: Data transformation returned successfully")
+    print("Data Transformation Completed Successfully", flush=True)
+
+    logging.info("STEP 5: Initializing ModelTrainer")
+    modeltrainer = ModelTrainer()
+
+    logging.info("STEP 6: Calling initiate_model_trainer")
+    result = modeltrainer.initiate_model_trainer(train_arr, test_arr)
+
+    logging.info("STEP 7: Model training completed")
+    print("Model Training Completed Successfully", flush=True)
+    print("R2 Score:", result, flush=True)
